@@ -114,4 +114,25 @@ router.post('/book', async (req, res) => {
         res.status(500).send('Server error');
     }
 });
+
+
+router.get('/autoSearch', async (req, res) => {
+    const { key, type } = req.query;
+    try {
+        let flights;
+        console.log("Key: ",key.length);
+        if(type=="source"){
+            flights= await Flight.find({"source" : {$regex : `^${key}` ,$options:'i'}});
+        }
+        else{
+            let destination=key;
+            flights = await Flight.find({ "destination":{$regex : `^${key}` ,$options:'i'}} );
+        }
+        res.json(flights);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+});
+
 module.exports = router;
